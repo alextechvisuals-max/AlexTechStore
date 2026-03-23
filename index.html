@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AlexTech</title>
+
+<style>
+body {
+  margin:0;
+  font-family:'Segoe UI', Arial;
+  color:white;
+  background: radial-gradient(circle at top, #1e3a8a, #020617 70%);
+}
+header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 20px;
+  background:rgba(2,6,23,0.8);
+  backdrop-filter: blur(10px);
+}
+.menu-icon {cursor:pointer; font-size:24px;}
+header img { 
+  width:40px; height:40px; border-radius:50%; object-fit:cover; 
+  margin-right:10px; position:relative; cursor:pointer;
+}
+.products {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:20px;
+  padding:20px;
+}
+.card {
+  background:rgba(30,41,59,0.6);
+  border-radius:16px;
+  padding:12px;
+  text-align:center;
+  transition:0.3s;
+  position:relative;
+}
+.card:hover { transform:translateY(-5px); }
+.card img { width:100%; border-radius:10px; }
+button { margin-top:8px; padding:10px; background:#2563eb; color:white; border:none; border-radius:8px; }
+.pencil {
+  position:absolute;
+  top:8px;
+  right:8px;
+  background:rgba(0,0,0,0.5);
+  border-radius:50%;
+  padding:4px;
+  cursor:pointer;
+}
+nav {
+  position:fixed;
+  right:0;
+  top:0;
+  width:260px;
+  height:100%;
+  background:#0f172a;
+  transform:translateX(100%);
+  transition:0.3s;
+  padding:20px;
+}
+nav.show {transform:translateX(0);}
+nav a { display:block; margin:10px 0; cursor:pointer; }
+.store {display:none;}
+footer { text-align:center; padding:20px; }
+
+/* Social media icons now tiny 10px */
+footer img {
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.admin-only {
+  display:none; /* only visible to admin */
+}
+</style>
+</head>
+<body>
+
+<header>
+<div style="display:flex; align-items:center;">
+  <img id="logo" src="logo.jpg" onclick="changeLogo()">
+  <h2>AlexTech</h2>
+</div>
+<div class="menu-icon" onclick="openMenu()">☰</div>
+</header>
+
+<div id="home">
+<h1 style="text-align:center;">Discover Premium Tech</h1>
+
+<!-- Admin-only Save All button -->
+<div style="text-align:center; margin-bottom:10px;">
+  <button id="save-all-btn" class="admin-only" onclick="saveAll()">💾 Save All</button>
+</div>
+
+<div class="products" id="home-images">
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8" id="home-img-1">
+    <div class="pencil" onclick="replaceHomeImage('home-img-1')">✏️</div>
+  </div>
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1518441902110-43c2a2b88e4f" id="home-img-2">
+    <div class="pencil" onclick="replaceHomeImage('home-img-2')">✏️</div>
+  </div>
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1516117172878-fd2c41f4a759" id="home-img-3">
+    <div class="pencil" onclick="replaceHomeImage('home-img-3')">✏️</div>
+  </div>
+</div>
+
+<div style="text-align:center; padding:20px;">
+  <a href="https://pin.it/5D1HdqpAC" target="_blank">
+    <img src="https://cdn-icons-png.flaticon.com/512/174/174863.png">
+  </a>
+  <a href="https://youtube.com/@alextech334?si=XbEMxj7nXB0vp-g4" target="_blank">
+    <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png">
+  </a>
+  <a href="https://www.instagram.com/alextechvisuals?igsh=eTBteWJhcW5tbjRl" target="_blank">
+    <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png">
+  </a>
+</div>
+</div>
+
+<nav id="menu">
+<button onclick="closeMenu()">Close</button>
+<a onclick="showCategory('deals')">Deals🔥</a>
+<a onclick="showCategory('modern')">Modern</a>
+<a onclick="showCategory('classic')">Classic</a>
+<a onclick="showCategory('accessories')">Accessories</a>
+</nav>
+
+<div class="store" id="store">
+
+<section id="deals">
+<h2>Deals🔥</h2>
+<button onclick="goHome()">Back</button>
+<button onclick="saveProducts()">💾 Save</button>
+<div class="products" id="deals-products">
+<div class="card"><button onclick="addProduct('deals-products')">+ Add</button></div>
+</div>
+</section>
+
+<section id="modern">
+<h2>Modern</h2>
+<button onclick="goHome()">Back</button>
+<button onclick="saveProducts()">💾 Save</button>
+<div class="products" id="modern-products">
+<div class="card"><button onclick="addProduct('modern-products')">+ Add</button></div>
+</div>
+</section>
+
+<section id="classic">
+<h2>Classic</h2>
+<button onclick="goHome()">Back</button>
+<button onclick="saveProducts()">💾 Save</button>
+<div class="products" id="classic-products">
+<div class="card"><button onclick="addProduct('classic-products')">+ Add</button></div>
+</div>
+</section>
+
+<section id="accessories">
+<h2>Accessories</h2>
+<button onclick="goHome()">Back</button>
+<button onclick="saveProducts()">💾 Save</button>
+<div class="products" id="accessories-products">
+<div class="card"><button onclick="addProduct('accessories-products')">+ Add</button></div>
+</div>
+</section>
+
+</div>
+
+<footer>
+<p>Contact: alextechvisuals@gmail.com</p>
+</footer>
+
+<script>
+// --- MENU ---
+function openMenu(){ document.getElementById("menu").classList.add("show"); }
+function closeMenu(){ document.getElementById("menu").classList.remove("show"); }
+function showCategory(cat){
+  document.getElementById("home").style.display="none";
+  document.getElementById("store").style.display="block";
+  document.querySelectorAll("#store section").forEach(sec=>sec.style.display="none");
+  document.getElementById(cat).style.display="block";
+  closeMenu();
+}
+function goHome(){
+  document.getElementById("home").style.display="block";
+  document.getElementById("store").style.display="none";
+}
+
+// --- ADMIN FLAG ---
+let isAdmin = true; // Only you
+if(isAdmin){
+  document.querySelectorAll(".admin-only").forEach(el=>el.style.display="inline-block");
+}
+
+// --- PRODUCT WITH TITLE, PRICE & IMAGE ---
+let exchangeRates = {};
+let userCurrency = "ZAR";
+
+try{
+  userCurrency = Intl.NumberFormat().resolvedOptions().currency || "ZAR";
+}catch(e){ userCurrency="ZAR"; }
+
+fetch("https://api.exchangerate.host/latest?base=ZAR")
+.then(res=>res.json())
+.then(data=>{ exchangeRates = data.rates; })
+.catch(err=>{ console.log("Currency API failed:", err); });
+
+function convertCurrency(amount){
+  if(!exchangeRates[userCurrency]) return amount;
+  let converted = amount * exchangeRates[userCurrency];
+  return converted.toLocaleString(undefined,{style:"currency",currency:userCurrency});
+}
+
+function addProduct(sectionId){
+  let title = prompt("Enter product title:");
+  if(!title) return;
+
+  let priceStr = prompt("Enter price in Rands (numbers only, e.g., 799):");
+  if(!priceStr) return;
+  let priceNum = parseFloat(priceStr);
+  if(isNaN(priceNum)){ alert("Invalid price"); return; }
+
+  let url = prompt("Enter product link:");
+  if(!url) return;
+
+  let input = document.createElement("input");
+  input.type="file"; input.accept="image/*";
+  input.onchange=function(){
+    let file=input.files[0];
+    if(file.size>2*1024*1024){ alert("Max 2MB"); return; }
+    let reader=new FileReader();
+    reader.onload=function(e){
+      createCard(sectionId,e.target.result,url,title,priceNum);
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+function createCard(sectionId,img,url,title,price){
+  let card=document.createElement("div");
+  card.className="card saved";
+
+  let displayPrice = convertCurrency(price);
+
+  card.innerHTML=`
+    <h4>${title}</h4>
+    <p style="font-weight:bold;">${displayPrice}</p>
+    <img src="${img}">
+    <a href="${url}" target="_blank"><button>🛒 Buy</button></a>
+    <button onclick="this.parentElement.remove()">Delete</button>
+  `;
+
+  document.getElementById(sectionId).appendChild(card);
+}
+
+// --- SAVE & LOAD ---
+function saveProducts(){
+  let all={};
+  document.querySelectorAll(".products").forEach(section=>{
+    let id=section.id;
+    let cards=section.querySelectorAll(".saved");
+    all[id]=[];
+    cards.forEach(card=>{
+      let img=card.querySelector("img").src;
+      let url=card.querySelector("a").href;
+      let title=card.querySelector("h4").innerText;
+      let priceStr = card.querySelector("p").innerText;
+      all[id].push({img,url,title,price:priceStr});
+    });
+  });
+  localStorage.setItem("products",JSON.stringify(all));
+}
+
+function saveAll(){
+  saveProducts();
+  // Save home images
+  let homeImgs={};
+  document.querySelectorAll("#home-images img").forEach(img=>{
+    homeImgs[img.id] = img.src;
+  });
+  localStorage.setItem("homeImages",JSON.stringify(homeImgs));
+  // Save logo
+  localStorage.setItem("logoImage",document.getElementById("logo").src);
+  alert("All changes saved!");
+}
+
+function loadProducts(){
+  let data=JSON.parse(localStorage.getItem("products"))||{};
+  for(let sectionId in data){
+    data[sectionId].forEach(p=>{
+      createCard(sectionId,p.img,p.url,p.title, parseFloat(p.price.replace(/[^0-9.-]+/g,"") || "0"));
+    });
+  }
+
+  let homeImgs = JSON.parse(localStorage.getItem("homeImages"))||{};
+  for(let id in homeImgs){ document.getElementById(id).src = homeImgs[id]; }
+  let logoSrc = localStorage.getItem("logoImage");
+  if(logoSrc) document.getElementById("logo").src = logoSrc;
+}
+loadProducts();
+
+// --- HOME IMAGE REPLACEMENT ---
+function replaceHomeImage(imgId){
+  let input=document.createElement("input");
+  input.type="file"; input.accept="image/*";
+  input.onchange=function(){
+    let file=input.files[0];
+    if(file.size>2*1024*1024){ alert("Max 2MB"); return; }
+    let reader=new FileReader();
+    reader.onload=function(e){
+      document.getElementById(imgId).src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+// --- LOGO REPLACEMENT ---
+function changeLogo(){
+  let input=document.createElement("input");
+  input.type="file"; input.accept="image/*";
+  input.onchange=function(){
+    let file=input.files[0];
+    if(file.size>2*1024*1024){ alert("Max 2MB"); return; }
+    let reader=new FileReader();
+    reader.onload=function(e){
+      document.getElementById("logo").src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+</script>
+
+</body>
+</html>
