@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AlexTech</title>
+<style>
+body {
+  margin:0; font-family:'Segoe UI',Arial; color:white;
+  background: radial-gradient(circle at top, #1e3a8a, #020617 70%);
+}
+header {display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:rgba(2,6,23,0.8); backdrop-filter: blur(10px);}
+header img { width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:10px; cursor:pointer; }
+.menu-icon {cursor:pointer; font-size:24px;}
+.products {display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px; padding:20px;}
+.card {background:rgba(30,41,59,0.6); border-radius:16px; padding:12px; text-align:center; position:relative; transition:0.3s; cursor:grab;}
+.card:hover{transform:translateY(-5px);}
+.card img {width:100%; border-radius:10px;}
+.pencil{position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.5); border-radius:50%; padding:4px; cursor:pointer;}
+nav{position:fixed; right:0; top:0; width:260px; height:100%; background:#0f172a; transform:translateX(100%); transition:0.3s; padding:20px;}
+nav.show{transform:translateX(0);}
+nav a{display:block; margin:10px 0; cursor:pointer;}
+.store{display:none;}
+footer{text-align:center; padding:20px; position:relative;}
+footer img{width:24px; height:24px; margin:0 5px; cursor:pointer; position:relative;}
+.admin-only{display:none;}
+[contenteditable]{outline:2px dashed rgba(255,255,255,0.3); padding:2px; border-radius:4px;}
+#admin-panel{position:fixed; bottom:10px; right:10px; background:rgba(0,0,0,0.7); padding:10px; border-radius:8px; display:none; z-index:999;}
+#admin-panel label{display:block; margin:4px 0;}
+#admin-panel input[type="range"]{width:100%;}
+</style>
+</head>
+<body>
+
+<header>
+<div style="display:flex; align-items:center;">
+  <img id="logo" src="logo.jpg" onclick="changeLogo()">
+  <h2 contenteditable="true" id="site-title">AlexTech</h2>
+</div>
+<div class="menu-icon" onclick="openMenu()">☰</div>
+</header>
+
+<div id="home">
+<h1 contenteditable="true" id="hero-title" style="text-align:center;">Discover Premium Tech</h1>
+<p contenteditable="true" id="hero-subtitle" style="text-align:center;">Modern gadgets. Clean experience. Smarter choices.</p>
+
+<div style="text-align:center; margin-bottom:10px;">
+  <button id="save-all-btn" class="admin-only" onclick="saveAll()">💾 Save All</button>
+</div>
+
+<div class="products" id="home-images">
+  <div class="card" draggable="true">
+    <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8" id="home-img-1">
+    <div class="pencil" onclick="replaceHomeImage('home-img-1')">✏️</div>
+  </div>
+  <div class="card" draggable="true">
+    <img src="https://images.unsplash.com/photo-1518441902110-43c2a2b88e4f" id="home-img-2">
+    <div class="pencil" onclick="replaceHomeImage('home-img-2')">✏️</div>
+  </div>
+  <div class="card" draggable="true">
+    <img src="https://images.unsplash.com/photo-1516117172878-fd2c41f4a759" id="home-img-3">
+    <div class="pencil" onclick="replaceHomeImage('home-img-3')">✏️</div>
+  </div>
+</div>
+
+<div style="text-align:center; padding:20px;">
+  <img src="https://cdn-icons-png.flaticon.com/512/174/174863.png" id="pinterest" class="draggable" onclick="selectElement(this)">
+  <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" id="youtube" class="draggable" onclick="selectElement(this)">
+  <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" id="instagram" class="draggable" onclick="selectElement(this)">
+</div>
+</div>
+
+<nav id="menu">
+<button onclick="closeMenu()">Close</button>
+<a onclick="showCategory('deals')">Deals🔥</a>
+<a onclick="showCategory('modern')">Modern</a>
+<a onclick="showCategory('classic')">Classic</a>
+<a onclick="showCategory('accessories')">Accessories</a>
+</nav>
+
+<div class="store" id="store">
+<section id="deals">
+<h2 contenteditable="true">Deals🔥</h2>
+<button onclick="goHome()">Back</button>
+<button onclick="saveProducts()">💾 Save</button>
+<div class="products" id="deals-products"></div>
+</section>
+
+<section id="modern">
+<h2 contenteditable="true">Modern</h2>
+<button onclick="goHome()">Back</button>
+<button onclick="saveProducts()">💾 Save</button>
+<div class="products" id="modern-products"></div>
+</section>
+
+<section id="classic">
+<h2 contenteditable="true">Classic</h2>
+<button onclick="goHome()">Back</button>
+<button onclick="saveProducts()">💾 Save</button>
+<div class="products" id="classic-products"></div>
+</section>
+
+<section id="accessories">
+<h2 contenteditable="true">Accessories</h2>
+<button onclick="goHome()">Back</button>
+<button onclick="saveProducts()">💾 Save</button>
+<div class="products" id="accessories-products"></div>
+</section>
+</div>
+
+<footer>
+<p>Contact: alextechvisuals@gmail.com</p>
+</footer>
+
+<div id="admin-panel" class="admin-only">
+<h4>Admin Controls</h4>
+<label>Font Size: <input type="range" min="12" max="50" id="font-size-slider"></label>
+<label>Font Weight: <input type="range" min="100" max="900" step="100" id="font-weight-slider"></label>
+<label>Image Width (%): <input type="range" min="10" max="100" id="img-width-slider"></label>
+<button onclick="deselectElement()">Deselect</button>
+</div>
+
+<script>
+// --- MENU ---
+function openMenu(){ document.getElementById("menu").classList.add("show"); }
+function closeMenu(){ document.getElementById("menu").classList.remove("show"); }
+function showCategory(cat){
+  document.getElementById("home").style.display="none";
+  document.getElementById("store").style.display="block";
+  document.querySelectorAll("#store section").forEach(sec=>sec.style.display="none");
+  document.getElementById(cat).style.display="block";
+  closeMenu();
+}
+function goHome(){
+  document.getElementById("home").style.display="block";
+  document.getElementById("store").style.display="none";
+}
+
+// --- ADMIN ---
+let isAdmin=true;
+if(isAdmin){
+  document.querySelectorAll(".admin-only").forEach(el=>el.style.display="block");
+  document.getElementById("admin-panel").style.display="block";
+}
+
+// --- SELECT ELEMENT ---
+let selectedElement=null;
+function selectElement(el){
+  selectedElement=el;
+  document.getElementById("font-size-slider").value=parseInt(window.getComputedStyle(el).fontSize)||16;
+  document.getElementById("font-weight-slider").value=parseInt(window.getComputedStyle(el).fontWeight)||400;
+  document.getElementById("img-width-slider").value=parseInt(window.getComputedStyle(el).width)||100;
+}
+function deselectElement(){selectedElement=null;}
+
+// --- CONTROL PANEL ---
+document.getElementById("font-size-slider").addEventListener("input",function(){
+  if(selectedElement) selectedElement.style.fontSize=this.value+"px";
+});
+document.getElementById("font-weight-slider").addEventListener("input",function(){
+  if(selectedElement) selectedElement.style.fontWeight=this.value;
+});
+document.getElementById("img-width-slider").addEventListener("input",function(){
+  if(selectedElement) selectedElement.style.width=this.value+"%";
+});
+
+// --- IMAGE & LOGO REPLACEMENT ---
+function replaceHomeImage(imgId){
+  let input=document.createElement("input");
+  input.type="file"; input.accept="image/*";
+  input.onchange=function(){
+    let file=input.files[0]; if(file.size>2*1024*1024){ alert("Max 2MB"); return; }
+    let reader=new FileReader();
+    reader.onload=function(e){ document.getElementById(imgId).src=e.target.result; };
+    reader.readAsDataURL(file);
+  }; input.click();
+}
+function changeLogo(){
+  let input=document.createElement("input");
+  input.type="file"; input.accept="image/*";
+  input.onchange=function(){
+    let file=input.files[0]; if(file.size>2*1024*1024){ alert("Max 2MB"); return; }
+    let reader=new FileReader();
+    reader.onload=function(e){ document.getElementById("logo").src=e.target.result; };
+    reader.readAsDataURL(file);
+  }; input.click();
+}
+
+// --- DRAG & DROP ---
+function makeDraggable(el){
+  el.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', el.id); });
+}
+document.querySelectorAll('.draggable, .card').forEach(makeDraggable);
+document.querySelectorAll('.products, body').forEach(container=>{
+  container.addEventListener('dragover', e=>e.preventDefault());
+  container.addEventListener('drop', e=>{
+    e.preventDefault();
+    let id=e.dataTransfer.getData('text/plain');
+    let dragged=document.getElementById(id);
+    if(dragged) container.appendChild(dragged);
+  });
+});
+
+// --- PRODUCTS ---
+let exchangeRates={}, userCurrency="ZAR";
+try{userCurrency=Intl.NumberFormat().resolvedOptions().currency||"ZAR";}catch(e){userCurrency="ZAR";}
+fetch("https://api.exchangerate.host/latest?base=ZAR").then(res=>res.json()).then(data=>{exchangeRates=data.rates;}).catch(e=>{console.log(e);});
+function convertCurrency(amount){if(!exchangeRates[userCurrency])return amount; let c=amount*exchangeRates[userCurrency]; return c.toLocaleString(undefined,{style:"currency",currency:userCurrency});}
+
+function addProduct(sectionId){
+  let title=prompt("Enter product title:"); if(!title)return;
+  let priceStr=prompt("Enter price in Rands:"); if(!priceStr)return; let priceNum=parseFloat(priceStr); if(isNaN(priceNum)){alert("Invalid price"); return;}
+  let url=prompt("Enter product link:"); if(!url)return;
+  let input=document.createElement("input"); input.type="file"; input.accept="image/*";
+  input.onchange=function(){
+    let file=input.files[0]; if(file.size>2*1024*1024){alert("Max 2MB"); return;}
+    let reader=new FileReader();
+    reader.onload=function(e){ createCard(sectionId,e.target.result,url,title,priceNum); };
+    reader.readAsDataURL(file);
+  }; input.click();
+}
+
+function createCard(sectionId,img,url,title,price){
+  let card=document.createElement("div"); card.className="card saved"; card.id="card-"+Date.now();
+  card.setAttribute("draggable","true"); makeDraggable(card);
+  let displayPrice=convertCurrency(price);
+  card.innerHTML=`<h4 contenteditable="true">${title}</h4><p contenteditable="true" style="font-weight:bold;">${displayPrice}</p><img src="${img}" style="width:100%"><a href="${url}" target="_blank"><button>🛒 Buy</button></a><button onclick="this.parentElement.remove()">Delete</button>`;
+  document.getElementById(sectionId).appendChild(card);
+}
+
+// --- SAVE & LOAD ---
+function saveProducts(){
+  let all={}; document.querySelectorAll(".products").forEach(section=>{
+    let id=section.id; let cards=section.querySelectorAll(".saved"); all[id]=[];
+    cards.forEach(card=>{
+      let img=card.querySelector("img").src; let url=card.querySelector("a").href; let title=card.querySelector("h4").innerText;
+      let priceStr = card.querySelector("p").innerText;
+      all[id].push({img,url,title,price:priceStr});
+    });
+  });
+  localStorage.setItem("products",JSON.stringify(all));
+}
+function saveAll(){
+  saveProducts();
+  let homeImgs={};
+  document.querySelectorAll("#home-images img").forEach(img=>{homeImgs[img.id]=img.src;});
+  localStorage.setItem("homeImages",JSON.stringify(homeImgs));
+  localStorage.setItem("logoImage",document.getElementById("logo").src);
+  let texts={};
+  document.querySelectorAll("[contenteditable]").forEach(el=>{texts[el.id]=el.innerHTML;});
+  localStorage.setItem("editableText",JSON.stringify(texts));
+  alert("All changes saved!");
+}
+function loadProducts(){
+  let data=JSON.parse(localStorage.getItem("products"))||{};
+  for(let sectionId in data){ data[sectionId].forEach(p=>{ createCard(sectionId,p.img,p.url,p.title,parseFloat(p.price.replace(/[^0-9.-]+/g,"")||"0")); }); }
+  let homeImgs=JSON.parse(localStorage.getItem("homeImages"))||{};
+  for(let id in homeImgs) document.getElementById(id).src=homeImgs[id];
+  let logoSrc=localStorage.getItem("logoImage"); if(logoSrc) document.getElementById("logo").src=logoSrc;
+  let texts=JSON.parse(localStorage.getItem("editableText"))||{};
+  for(let id in texts){ let el=document.getElementById(id); if(el) el.innerHTML=texts[id]; }
+}
+loadProducts();
+</script>
+
+</body>
+</html>
