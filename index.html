@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlexTech • Premium Tech Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .admin-mode .pencil { display: flex !important; }
+        .hero-bg { background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 100%); }
+        .product-card:hover { transform: translateY(-8px); }
+        #admin-toolbar {
+            position: fixed; left: 16px; top: 50%; transform: translateY(-50%);
+            background: #111827; border: 3px solid #00f7ff; border-radius: 9999px;
+            padding: 20px 12px; display: none; flex-direction: column; gap: 20px;
+            z-index: 999; width: 72px;
+        }
+        .admin-mode #admin-toolbar { display: flex; }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-white min-h-screen">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-black/90 border-b border-white/10 p-5 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <img id="logo-img" src="https://picsum.photos/id/1015/80/80" class="w-12 h-12 rounded-2xl">
+            <h1 id="store-name" class="text-3xl font-bold">AlexTech</h1>
+        </div>
+        <button onclick="toggleAdminMode()" class="w-12 h-12 bg-cyan-400 text-black rounded-2xl text-3xl font-bold">⚙️</button>
+    </header>
+
+    <!-- Admin Toolbar -->
+    <div id="admin-toolbar">
+        <button onclick="saveAllChanges()" class="w-12 h-12 bg-cyan-400 text-black rounded-2xl text-3xl">💾</button>
+        <button onclick="toggleAdminMode()" class="w-12 h-12 bg-white/10 rounded-2xl text-3xl">✕</button>
+    </div>
+
+    <main id="main-content"></main>
+
+    <script>
+        let adminMode = false;
+        let currentView = 'home';
+
+        let state = {
+            reviews: [
+                {avatar: "https://picsum.photos/id/64/200/200", name: "Sarah M.", text: "The Nebula Pro earbuds are incredible. Sound quality is next level!"},
+                {avatar: "https://picsum.photos/id/1005/200/200", name: "James K.", text: "Bought the Quantum laptop — it's a powerhouse. Highly recommend!"},
+                {avatar: "https://picsum.photos/id/201/200/200", name: "Priya Patel", text: "Everything feels so premium. Love the experience!"}
+            ],
+            showcaseImages: [
+                "https://picsum.photos/id/1015/800/600",
+                "https://picsum.photos/id/201/800/600",
+                "https://picsum.photos/id/301/800/600",
+                "https://picsum.photos/id/401/800/600"
+            ]
+        };
+
+        function replaceImage(targetId) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    const dataUrl = ev.target.result;
+                    const img = document.getElementById(targetId);
+                    if (img) img.src = dataUrl;
+
+                    if (targetId.startsWith('review-avatar-')) {
+                        const idx = parseInt(targetId.split('-')[2]);
+                        if (state.reviews[idx]) state.reviews[idx].avatar = dataUrl;
+                    } else if (targetId.startsWith('showcase-')) {
+                        const idx = parseInt(targetId.split('-')[1]);
+                        state.showcaseImages[idx] = dataUrl;
+                    }
+
+                    alert("✅ Image uploaded!\n\nTap 💾 Save, then pull down to refresh.");
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+
+        function saveAllChanges() {
+            localStorage.setItem('alextechState', JSON.stringify(state));
+            alert("💾 Saved!\nPull down to refresh the page.");
+        }
+
+        function toggleAdminMode() {
+            adminMode = !adminMode;
+            document.documentElement.classList.toggle('admin-mode', adminMode);
+            renderMainContent();
+        }
+
+        function renderMainContent() {
+            let html = `
+                <div class="hero-bg pt-20 pb-24 px-6 text-center">
+                    <h1 class="text-6xl font-bold leading-none">Future-Ready Tech.<br>Built for You.</h1>
+                </div>
+
+                <!-- Showcase -->
+                <div class="px-6 py-12">
+                    <div class="grid grid-cols-2 gap-6">
+                        ${state.showcaseImages.map((url, i) => `
+                            <div class="relative rounded-3xl overflow-hidden aspect-video">
+                                <img src="\( {url}" id="showcase- \){i}" class="w-full h-full object-cover">
+                                <button onclick="replaceImage('showcase-${i}')" class="pencil hidden absolute top-4 right-4 bg-cyan-400 text-black w-10 h-10 rounded-2xl flex items-center justify-center text-2xl">✏️</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Reviews -->
+                <div class="px-6 py-12">
+                    <h2 class="text-4xl font-bold text-center mb-12">Loved by Real Customers</h2>
+                    <div class="grid gap-8">
+                        ${state.reviews.map((review, i) => `
+                            <div class="bg-white/5 rounded-3xl p-8">
+                                <div class="relative w-fit mb-6">
+                                    <img src="\( {review.avatar}" id="review-avatar- \){i}" class="w-28 h-28 rounded-2xl object-cover border-4 border-cyan-400">
+                                    <button onclick="replaceImage('review-avatar-${i}')" class="pencil hidden absolute -top-3 -right-3 bg-cyan-400 text-black w-10 h-10 rounded-2xl flex items-center justify-center text-2xl">✏️</button>
+                                </div>
+                                <p class="text-lg">"${review.text}"</p>
+                                <p class="font-semibold mt-6">${review.name}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('main-content').innerHTML = html;
+        }
+
+        window.onload = () => {
+            const saved = localStorage.getItem('alextechState');
+            if (saved) state = JSON.parse(saved);
+            renderMainContent();
+        };
+    </script>
+</body>
+</html>
