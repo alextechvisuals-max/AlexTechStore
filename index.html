@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlexTech • Premium Tech Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        
+        .admin-mode .pencil { display: flex !important; }
+        .editing { background-color: rgba(0, 247, 255, 0.15) !important; outline: 2px solid #00f7ff; border-radius: 8px; padding: 2px 6px; }
+        
+        .hero-bg { background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 100%); }
+        .product-card:hover { transform: translateY(-8px); box-shadow: 0 25px 50px -12px rgb(0 247 255 / 0.25); }
+        
+        .sidebar { transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1); }
+        
+        #admin-toolbar {
+            position: fixed;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #111827;
+            border: 3px solid #00f7ff;
+            border-radius: 9999px;
+            padding: 18px 12px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            z-index: 500;
+            box-shadow: 6px 0 25px -6px rgba(0, 247, 255, 0.5);
+            width: 68px;
+        }
+        .admin-mode #admin-toolbar { display: flex; }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-white min-h-screen">
+
+    <!-- HEADER -->
+    <header class="sticky top-0 z-50 bg-[#0a0a0a]/90 border-b border-white/10 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+            <div class="flex items-center gap-x-4">
+                <div class="relative">
+                    <img id="logo-img" src="https://picsum.photos/id/1015/80/80" alt="Logo" class="w-11 h-11 rounded-2xl object-cover ring-2 ring-[#00f7ff]/30">
+                    <button onclick="replaceImage('logo-img')" class="pencil hidden absolute -top-2 -right-2 bg-[#00f7ff] text-black w-8 h-8 rounded-2xl flex items-center justify-center text-xl">✏️</button>
+                </div>
+                <h1 id="store-name" onclick="makeEditable(this)" class="text-3xl font-bold tracking-tight cursor-pointer">AlexTech</h1>
+            </div>
+
+            <div class="flex items-center gap-x-6">
+                <div onclick="showCurrencySelector()" class="flex items-center bg-white/10 hover:bg-white/20 px-5 py-2 rounded-3xl text-sm cursor-pointer">
+                    <span id="currency-flag" class="mr-2 text-lg">🇿🇦</span>
+                    <span id="currency-code" class="font-medium">ZAR</span>
+                </div>
+
+                <button onclick="toggleSidebar()" class="md:hidden text-3xl p-2"><i class="fa-solid fa-bars"></i></button>
+
+                <button onclick="toggleAdminMode()" class="w-11 h-11 flex items-center justify-center bg-gradient-to-br from-[#00f7ff] to-cyan-400 text-black rounded-2xl text-2xl font-bold shadow-xl hover:scale-110">⚙️</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-80 bg-[#111827] -translate-x-full z-[200] flex flex-col shadow-2xl">
+        <div class="p-6 border-b border-white/10 flex items-center justify-between">
+            <h2 class="text-2xl font-bold">Menu</h2>
+            <button onclick="toggleSidebar()" class="text-4xl">✕</button>
+        </div>
+        <div class="flex-1 px-4 py-8 space-y-2 text-lg">
+            <button onclick="navigateTo('home'); toggleSidebar()" class="w-full text-left px-6 py-5 rounded-3xl hover:bg-white/10 flex items-center gap-x-4"><i class="fa-solid fa-house"></i> Home</button>
+            <button onclick="navigateTo('deals'); toggleSidebar()" class="w-full text-left px-6 py-5 rounded-3xl hover:bg-white/10 flex items-center gap-x-4"><i class="fa-solid fa-fire"></i> Deals</button>
+            <button onclick="navigateTo('modern'); toggleSidebar()" class="w-full text-left px-6 py-5 rounded-3xl hover:bg-white/10 flex items-center gap-x-4"><i class="fa-solid fa-rocket"></i> Modern</button>
+            <button onclick="navigateTo('classic'); toggleSidebar()" class="w-full text-left px-6 py-5 rounded-3xl hover:bg-white/10 flex items-center gap-x-4"><i class="fa-solid fa-clock"></i> Classic</button>
+            <button onclick="navigateTo('accessories'); toggleSidebar()" class="w-full text-left px-6 py-5 rounded-3xl hover:bg-white/10 flex items-center gap-x-4"><i class="fa-solid fa-headphones"></i> Accessories</button>
+        </div>
+    </div>
+
+    <!-- ADMIN TOOLBAR -->
+    <div id="admin-toolbar">
+        <div class="text-[#00f7ff] text-sm font-bold tracking-widest">ADMIN</div>
+        <button onclick="saveAllChanges()" class="w-11 h-11 flex items-center justify-center bg-[#00f7ff] text-black rounded-2xl text-2xl hover:scale-110">💾</button>
+        <button onclick="toggleAdminMode()" class="w-11 h-11 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-2xl text-2xl">✕</button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main id="main-content"></main>
+
+    <!-- CURRENCY MODAL -->
+    <div id="currency-modal" class="hidden fixed inset-0 bg-black/70 z-[500] flex items-center justify-center">
+        <div class="bg-[#111827] rounded-3xl w-full max-w-xs mx-4 p-6">
+            <h3 class="text-xl font-bold mb-6 text-center">Choose Currency</h3>
+            <div class="grid grid-cols-2 gap-3" id="currency-options"></div>
+            <button onclick="hideCurrencyModal()" class="mt-6 w-full py-4 text-white/70">Close</button>
+        </div>
+    </div>
+
+    <!-- ADD PRODUCT BUTTON -->
+    <button onclick="showAddProductModal()" id="add-product-btn" class="hidden fixed bottom-8 right-8 w-16 h-16 bg-[#00f7ff] text-black rounded-3xl text-5xl shadow-2xl flex items-center justify-center z-[300]">+</button>
+
+    <!-- PRODUCT MODAL -->
+    <div id="product-modal" class="hidden fixed inset-0 bg-black/80 z-[400] flex items-center justify-center">
+        <div class="bg-[#111827] rounded-3xl w-full max-w-lg mx-4 p-8">
+            <h3 id="modal-title" class="text-2xl font-bold mb-8">Add New Product</h3>
+            <select id="modal-category" class="w-full bg-white/10 rounded-2xl px-6 py-4 mb-6 text-white">
+                <option value="deals">Deals</option>
+                <option value="modern">Modern</option>
+                <option value="classic">Classic</option>
+                <option value="accessories">Accessories</option>
+            </select>
+            <input id="modal-name" type="text" placeholder="Product Title" class="w-full bg-white/10 rounded-2xl px-6 py-4 mb-6 text-white placeholder:text-white/50">
+            <input id="modal-price" type="number" placeholder="Price in ZAR" class="w-full bg-white/10 rounded-2xl px-6 py-4 mb-6 text-white">
+            <input id="modal-image-input" type="file" accept="image/*" class="hidden" onchange="previewModalImage(event)">
+            <button onclick="document.getElementById('modal-image-input').click()" class="w-full border-2 border-dashed border-white/30 hover:border-[#00f7ff] rounded-3xl py-12 text-center mb-6">📸 Upload Image</button>
+            <img id="modal-preview" class="hidden w-full rounded-2xl mb-6">
+            <div class="flex gap-4">
+                <button onclick="hideProductModal()" class="flex-1 py-4 text-white/70">Cancel</button>
+                <button onclick="saveProductFromModal()" class="flex-1 bg-[#00f7ff] text-black font-bold py-4 rounded-3xl">Save Product</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let adminMode = false;
+        let currentView = 'home';
+        let editingProductId = null;
+        let currentCurrency = 'ZAR';
+        let exchangeRates = { ZAR: 1 };
+
+        let state = {
+            storeName: "AlexTech",
+            logoUrl: "https://picsum.photos/id/1015/80/80",
+            heroTitle: "Future-Ready Tech.<br>Built for You.",
+            heroDesc: "Premium gadgets, lightning-fast delivery, and the best prices in the game. Shop the future today.",
+            showcaseImages: ["https://picsum.photos/id/1015/800/600","https://picsum.photos/id/201/800/600","https://picsum.photos/id/301/800/600","https://picsum.photos/id/401/800/600"],
+            reviews: [
+                { id: 1, avatar: "https://picsum.photos/id/64/80/80", name: "Sarah M.", text: "The Nebula Pro earbuds are incredible. Sound quality is next level and they arrived same day!" },
+                { id: 2, avatar: "https://picsum.photos/id/1005/80/80", name: "James K.", text: "Bought the Quantum laptop — it's a powerhouse. Battery life is insane. Highly recommend AlexTech!" },
+                { id: 3, avatar: "https://picsum.photos/id/201/80/80", name: "Priya Patel", text: "Everything feels so premium. The design, packaging, and customer experience are unmatched. Love it!" }
+            ],
+            socials: [
+                { id: 1, platform: "instagram", icon: "https://picsum.photos/id/1005/48/48", link: "https://www.instagram.com/alextechvisuals?igsh=eTBteWJhcW5tbjRl" },
+                { id: 2, platform: "pinterest", icon: "https://picsum.photos/id/201/48/48", link: "https://pin.it/6liiAxQBq" },
+                { id: 3, platform: "youtube", icon: "https://picsum.photos/id/301/48/48", link: "https://youtube.com/@alextech334?si=jZK7kQ9sAYHauV9C" }
+            ],
+            products: [
+                { id: 101, category: "deals", title: "Nebula Pro Earbuds", price: 129, image: "https://picsum.photos/id/1015/400/400" },
+                { id: 102, category: "deals", title: "Quantum Laptop 16″", price: 899, image: "https://picsum.photos/id/201/400/400" },
+                { id: 201, category: "modern", title: "HoloWatch Ultra", price: 399, image: "https://picsum.photos/id/301/400/400" },
+                { id: 202, category: "modern", title: "Aether Wireless Charger", price: 79, image: "https://picsum.photos/id/401/400/400" },
+                { id: 301, category: "classic", title: "Vintage Mechanical Keyboard", price: 149, image: "https://picsum.photos/id/501/400/400" },
+                { id: 401, category: "accessories", title: "Carbon Fiber Cable Kit", price: 29, image: "https://picsum.photos/id/701/400/400" }
+            ]
+        };
+
+        const currencyList = [
+            {code: 'ZAR', symbol: 'R', flag: '🇿🇦', name: 'South African Rand'},
+            {code: 'USD', symbol: '$', flag: '🇺🇸', name: 'US Dollar'},
+            {code: 'EUR', symbol: '€', flag: '🇪🇺', name: 'Euro'},
+            {code: 'GBP', symbol: '£', flag: '🇬🇧', name: 'British Pound'}
+        ];
+
+        async function loadExchangeRates() {
+            try {
+                const res = await fetch('https://api.exchangerate.host/latest?base=ZAR');
+                const data = await res.json();
+                if (data.rates) exchangeRates = { ZAR: 1, ...data.rates };
+            } catch(e) {
+                exchangeRates = { ZAR: 1, USD: 0.055, EUR: 0.051, GBP: 0.043 };
+            }
+        }
+
+        function convertPrice(priceZAR, toCurrency) {
+            const rate = exchangeRates[toCurrency] || 1;
+            return Math.round(priceZAR * rate * 100) / 100;
+        }
+
+        function formatPrice(priceZAR) {
+            const converted = convertPrice(priceZAR, currentCurrency);
+            const curr = currencyList.find(c => c.code === currentCurrency);
+            return currentCurrency === 'ZAR' ? `R\( {converted}` : ` \){curr.symbol}${converted}`;
+        }
+
+        function showCurrencySelector() {
+            const container = document.getElementById('currency-options');
+            container.innerHTML = '';
+            currencyList.forEach(curr => {
+                const active = curr.code === currentCurrency ? 'ring-2 ring-[#00f7ff]' : '';
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-2xl bg-white/10 hover:bg-white/20 flex flex-col items-center cursor-pointer ${active}`;
+                div.innerHTML = `<span class="text-4xl mb-2">\( {curr.flag}</span><span class="font-medium"> \){curr.code}</span><span class="text-xs text-white/60">${curr.name}</span>`;
+                div.onclick = () => {
+                    currentCurrency = curr.code;
+                    document.getElementById('currency-code').textContent = curr.code;
+                    document.getElementById('currency-flag').textContent = curr.flag;
+                    hideCurrencyModal();
+                    renderMainContent();
+                };
+                container.appendChild(div);
+            });
+            document.getElementById('currency-modal').classList.remove('hidden');
+        }
+
+        function hideCurrencyModal() {
+            document.getElementById('currency-modal').classList.add('hidden');
+        }
+
+        function toggleAdminMode() {
+            adminMode = !adminMode;
+            document.documentElement.classList.toggle('admin-mode', adminMode);
+            document.getElementById('add-product-btn').classList.toggle('hidden', !adminMode);
+            renderMainContent();
+        }
+
+        function makeEditable(el) {
+            if (!adminMode) return;
+            el.contentEditable = true;
+            el.focus();
+            el.classList.add('editing');
+            el.onblur = () => {
+                el.contentEditable = false;
+                el.classList.remove('editing');
+                if (el.id === "store-name") state.storeName = el.innerText.trim();
+                if (el.id === "hero-title") state.heroTitle = el.innerHTML;
+                if (el.id === "hero-desc") state.heroDesc = el.innerText.trim();
+            };
+        }
+
+        // Simplified replaceImage with forced re-render
+        function replaceImage(targetId) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                if (file.size > 8 * 1024 * 1024) {
+                    if (!confirm("Large image (>8MB). May slow site. Continue?")) return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const dataUrl = ev.target.result;
+
+                    // Update DOM immediately
+                    const img = document.getElementById(targetId);
+                    if (img) img.src = dataUrl;
+
+                    // Update state
+                    if (targetId === 'logo-img') state.logoUrl = dataUrl;
+                    else if (targetId.startsWith('showcase-')) state.showcaseImages[parseInt(targetId.split('-')[1])] = dataUrl;
+                    else if (targetId.startsWith('review-avatar-')) state.reviews[parseInt(targetId.split('-')[2])].avatar = dataUrl;
+                    else if (targetId.startsWith('social-')) state.socials[parseInt(targetId.split('-')[1])].icon = dataUrl;
+                    else if (targetId.startsWith('prod-img-')) {
+                        const id = parseInt(targetId.split('-')[2]);
+                        const prod = state.products.find(p => p.id === id);
+                        if (prod) prod.image = dataUrl;
+                    }
+
+                    // Force re-render after update
+                    setTimeout(() => {
+                        renderMainContent();
+                    }, 100);
+
+                    const toast = document.createElement('div');
+                    toast.textContent = "✅ Image updated! Press Save to keep it.";
+                    toast.style.cssText = "position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:#00f7ff;color:#000;padding:14px 28px;border-radius:9999px;font-weight:700;z-index:999;";
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 2200);
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+
+        function saveAllChanges() {
+            localStorage.setItem('alextechState', JSON.stringify(state));
+            const toast = document.createElement('div');
+            toast.textContent = "✅ All changes saved! Reload the page.";
+            toast.style.cssText = "position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#00f7ff;color:#000;padding:16px 32px;border-radius:9999px;font-weight:700;";
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        }
+
+        function navigateTo(view) {
+            currentView = view;
+            renderMainContent();
+        }
+
+        function renderMainContent() {
+            const main = document.getElementById('main-content');
+            let html = '';
+
+            if (currentView === 'home') {
+                html = `
+                <div class="hero-bg pt-20 pb-24">
+                    <div class="max-w-7xl mx-auto px-6">
+                        <div class="grid md:grid-cols-2 gap-16 items-center">
+                            <div>
+                                <h1 id="hero-title" onclick="makeEditable(this)" class="text-6xl md:text-7xl font-bold leading-none tracking-tighter">${state.heroTitle}</h1>
+                                <p id="hero-desc" onclick="makeEditable(this)" class="mt-8 text-xl text-white/80 max-w-lg">${state.heroDesc}</p>
+                                <div class="mt-12 flex flex-wrap gap-4">
+                                    <button onclick="alert('Redirecting to shop... (demo)')" class="px-10 py-6 bg-[#00f7ff] text-black font-bold text-xl rounded-3xl">Shop Now</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-6">
+                                ${state.showcaseImages.map((url, i) => `
+                                    <div class="relative rounded-3xl overflow-hidden aspect-video">
+                                        <img src="\( {url}" id="showcase- \){i}" class="w-full h-full object-cover">
+                                        <button onclick="replaceImage('showcase-${i}')" class="pencil hidden absolute top-4 right-4 bg-[#00f7ff] text-black w-9 h-9 rounded-2xl flex items-center justify-center text-xl">✏️</button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews -->
+                <div class="max-w-7xl mx-auto px-6 py-20">
+                    <h2 class="text-4xl font-bold text-center mb-12">Loved by Real Customers</h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        ${state.reviews.map((review, i) => `
+                            <div class="bg-white/5 rounded-3xl p-8">
+                                <div class="relative mb-6">
+                                    <img src="\( {review.avatar}" id="review-avatar- \){i}" class="w-16 h-16 rounded-2xl object-cover">
+                                    <button onclick="replaceImage('review-avatar-${i}')" class="pencil hidden absolute -top-1 -right-1 bg-[#00f7ff] text-black w-9 h-9 rounded-2xl flex items-center justify-center text-xl">✏️</button>
+                                </div>
+                                <p onclick="makeEditable(this)" class="text-lg leading-relaxed mb-6">"${review.text}"</p>
+                                <div onclick="makeEditable(this)" class="font-semibold">${review.name}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Social -->
+                <div class="max-w-7xl mx-auto px-6 pb-20 flex flex-wrap justify-center gap-x-12 gap-y-6 text-white/70">
+                    ${state.socials.map((s, i) => `
+                        <a href="${s.link}" target="_blank" class="flex items-center gap-x-4 group">
+                            <div class="relative">
+                                <img src="\( {s.icon}" id="social- \){i}" class="w-10 h-10 rounded-2xl">
+                                <button onclick="event.preventDefault(); replaceImage('social-${i}')" class="pencil hidden absolute -top-1 -right-1 bg-[#00f7ff] text-black w-7 h-7 rounded-xl flex items-center justify-center text-sm">✏️</button>
+                            </div>
+                            <span class="uppercase tracking-widest text-sm group-hover:text-[#00f7ff]">${s.platform}</span>
+                        </a>
+                    `).join('')}
+                </div>`;
+            } else {
+                const filtered = state.products.filter(p => p.category === currentView);
+                const titles = {deals: "Hot Deals 🔥", modern: "Modern Collection", classic: "Classic Collection", accessories: "Accessories"};
+                html = `
+                <div class="max-w-7xl mx-auto px-6 py-16">
+                    <div class="flex justify-between items-center mb-10">
+                        <h1 class="text-5xl font-bold">${titles[currentView]}</h1>
+                        <button onclick="navigateTo('home')" class="flex items-center gap-x-2 text-white/70 hover:text-white"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                        ${filtered.map(product => `
+                            <div class="product-card bg-white/5 rounded-3xl overflow-hidden">
+                                <div class="relative">
+                                    <img src="\( {product.image}" id="prod-img- \){product.id}" class="w-full aspect-square object-cover">
+                                    <div class="pencil hidden absolute top-4 right-4 flex gap-2">
+                                        <button onclick="editProduct(${product.id}); event.stopImmediatePropagation()" class="bg-[#00f7ff] text-black w-9 h-9 rounded-2xl flex items-center justify-center text-xl">✏️</button>
+                                        <button onclick="deleteProduct(${product.id}); event.stopImmediatePropagation()" class="bg-red-500 text-white w-9 h-9 rounded-2xl flex items-center justify-center text-xl">🗑</button>
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <h3 onclick="makeEditable(this)" class="font-semibold text-xl mb-2">${product.title}</h3>
+                                    <div class="text-[#00f7ff] text-3xl font-bold">${formatPrice(product.price)}</div>
+                                    <button onclick="addToCart(${product.id})" class="mt-6 w-full py-4 bg-white text-black font-bold rounded-3xl">Add to Cart</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+            }
+
+            main.innerHTML = html;
+            document.getElementById('store-name').textContent = state.storeName;
+            document.getElementById('logo-img').src = state.logoUrl;
+        }
+
+        function showAddProductModal() {
+            editingProductId = null;
+            document.getElementById('modal-title').textContent = "Add New Product";
+            document.getElementById('modal-name').value = "";
+            document.getElementById('modal-price').value = "";
+            document.getElementById('modal-preview').classList.add('hidden');
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        function hideProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+        }
+
+        function previewModalImage(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const preview = document.getElementById('modal-preview');
+                preview.src = ev.target.result;
+                preview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveProductFromModal() {
+            const name = document.getElementById('modal-name').value.trim() || "New Product";
+            const price = parseFloat(document.getElementById('modal-price').value) || 99;
+            const category = document.getElementById('modal-category').value;
+            const previewImg = document.getElementById('modal-preview');
+            const imageUrl = previewImg && !previewImg.classList.contains('hidden') ? previewImg.src : "https://picsum.photos/id/999/400/400";
+
+            if (editingProductId) {
+                const prod = state.products.find(p => p.id === editingProductId);
+                if (prod) {
+                    prod.title = name;
+                    prod.price = price;
+                    prod.category = category;
+                    prod.image = imageUrl;
+                }
+            } else {
+                state.products.push({ id: Date.now(), category, title: name, price, image: imageUrl });
+            }
+            hideProductModal();
+            renderMainContent();
+        }
+
+        function editProduct(id) {
+            const prod = state.products.find(p => p.id === id);
+            if (!prod) return;
+            editingProductId = id;
+            document.getElementById('modal-title').textContent = "Edit Product";
+            document.getElementById('modal-name').value = prod.title;
+            document.getElementById('modal-price').value = prod.price;
+            document.getElementById('modal-category').value = prod.category;
+            const preview = document.getElementById('modal-preview');
+            preview.src = prod.image;
+            preview.classList.remove('hidden');
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        function deleteProduct(id) {
+            if (confirm("Delete this product?")) {
+                state.products = state.products.filter(p => p.id !== id);
+                renderMainContent();
+            }
+        }
+
+        function addToCart(id) {
+            const prod = state.products.find(p => p.id === id);
+            if (prod) alert(`✅ ${prod.title} added to cart for ${formatPrice(prod.price)}`);
+        }
+
+        async function init() {
+            const saved = localStorage.getItem('alextechState');
+            if (saved) state = JSON.parse(saved);
+
+            await loadExchangeRates();
+
+            const lang = navigator.language || 'en-ZA';
+            if (lang.includes('US')) currentCurrency = 'USD';
+            else if (lang.includes('GB')) currentCurrency = 'GBP';
+            else if (lang.includes('DE') || lang.includes('FR')) currentCurrency = 'EUR';
+
+            document.getElementById('currency-code').textContent = currentCurrency;
+            const curr = currencyList.find(c => c.code === currentCurrency);
+            if (curr) document.getElementById('currency-flag').textContent = curr.flag;
+
+            renderMainContent();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
