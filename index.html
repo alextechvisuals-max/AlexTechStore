@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlexTech Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white p-8">
+
+    <h1 class="text-4xl font-bold mb-8">AlexTech - Upload Test</h1>
+    
+    <div class="mb-8">
+        <p class="mb-4">Review Avatar 1:</p>
+        <div class="relative inline-block">
+            <img id="review-avatar-0" src="https://picsum.photos/id/64/120/120" class="w-28 h-28 rounded-2xl object-cover border-4 border-cyan-400">
+            <button onclick="replaceImage(0)" class="absolute -top-2 -right-2 bg-cyan-400 text-black w-10 h-10 rounded-full flex items-center justify-center text-2xl">✏️</button>
+        </div>
+    </div>
+
+    <button onclick="saveAllChanges()" class="mt-8 bg-green-500 px-8 py-4 rounded-3xl text-xl font-bold">💾 Save All Changes</button>
+
+    <script>
+        let state = {
+            reviews: [
+                {avatar: "https://picsum.photos/id/64/120/120"},
+                {avatar: "https://picsum.photos/id/1005/120/120"},
+                {avatar: "https://picsum.photos/id/201/120/120"}
+            ]
+        };
+
+        function replaceImage(index) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    const dataUrl = ev.target.result;
+                    
+                    // Update image immediately
+                    document.getElementById('review-avatar-' + index).src = dataUrl;
+                    state.reviews[index].avatar = dataUrl;
+
+                    alert("✅ Image should now be visible! Tap Save, then pull down to refresh.");
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+
+        function saveAllChanges() {
+            localStorage.setItem('alextechTest', JSON.stringify(state));
+            alert("💾 Saved! Now pull down to refresh the page.");
+        }
+
+        // Load saved data
+        window.onload = () => {
+            const saved = localStorage.getItem('alextechTest');
+            if (saved) {
+                state = JSON.parse(saved);
+                state.reviews.forEach((review, i) => {
+                    const img = document.getElementById('review-avatar-' + i);
+                    if (img) img.src = review.avatar;
+                });
+            }
+        };
+    </script>
+</body>
+</html>
