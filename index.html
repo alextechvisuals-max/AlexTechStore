@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetroFuture - Modern & Classic Tech Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF6B35;
+            --foreground: #1a1a1a;
+            --background: #f5f1ed;
+            --accent: #00d084;
+            --muted: #999;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--background);
+            border-bottom: 4px solid var(--foreground);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--foreground);
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            border: 2px solid transparent;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s;
+        }
+
+        nav a:hover {
+            border: 2px solid var(--primary);
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .currency-selector {
+            border: 2px solid var(--foreground);
+            padding: 0.5rem 1rem;
+            background-color: white;
+            cursor: pointer;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .currency-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border: 2px solid var(--foreground);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            min-width: 200px;
+        }
+
+        .currency-dropdown.active {
+            display: block;
+        }
+
+        .currency-option {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            font-size: 0.85rem;
+            transition: background-color 0.2s;
+        }
+
+        .currency-option:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background-color: var(--foreground);
+            border: 2px solid var(--foreground);
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            color: white;
+            padding: 6rem 2rem;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 4px solid var(--primary);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 10 L90 40 L70 90 L30 90 L10 40 Z" fill="%23FF6B35" opacity="0.1"/></svg>');
+            background-size: 300px;
+            background-repeat: no-repeat;
+            background-position: right center;
+            z-index: 0;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .hero p {
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+            max-width: 600px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: 2px solid var(--foreground);
+            background-color: var(--primary);
+            color: white;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.3);
+        }
+
+        .btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            padding: 4rem 2rem;
+            border-bottom: 4px solid var(--foreground);
+        }
+
+        .section-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+        }
+
+        .about-text {
+            max-width: 800px;
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-bottom: 3rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .category-card {
+            border: 3px solid var(--foreground);
+            overflow: hidden;
+            background-color: white;
+            transition: all 0.3s;
+        }
+
+        .category-card:hover {
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
+            transform: translate(-2px, -2px);
+        }
+
+        .category-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #eee;
+        }
+
+        .category-content {
+            padding: 1.5rem;
+        }
+
+        .category-content h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .category-content p {
+            font-size: 0.9rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            border: 3px solid var(--foreground);
+            overflow: hidden;
+            background-color: white;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .product-card:hover {
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
+            transform: translate(-2px, -2px);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background-color: var(--accent);
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transform: rotate(-15deg);
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background-color: #eee;
+            border-bottom: 3px solid var(--foreground);
+        }
+
+        .product-content {
+            padding: 1.5rem;
+        }
+
+        .product-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .product-description {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .product-price {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .product-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary);
+            color: white;
+            border: 2px solid var(--foreground);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        .product-btn:hover {
+            background-color: var(--foreground);
+        }
+
+        .cart-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary);
+            color: white;
+            border: 2px solid var(--foreground);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+            margin-top: 0.5rem;
+        }
+
+        .cart-btn:hover {
+            background-color: #e55a24;
+        }
+
+        .reviews {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .review-card {
+            border: 3px solid var(--foreground);
+            padding: 2rem;
+            background-color: white;
+            position: relative;
+        }
+
+        .review-quote {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .review-text {
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        .review-author {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            margin-bottom: 0.25rem;
+        }
+
+        .review-date {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .review-rating {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            background-color: var(--foreground);
+            color: white;
+            padding: 3rem 2rem;
+            border-top: 4px solid var(--primary);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .footer-section a {
+            display: block;
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            border-top: 2px solid #444;
+            padding-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--foreground);
+            color: var(--background);
+            padding: 2rem;
+            z-index: 200;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-bottom: 4px solid var(--primary);
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-panel h2 {
+            color: var(--background);
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-tab {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: 2px solid var(--background);
+            cursor: pointer;
+            font-family: 'Bebas Neue', sans-serif;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+
+        .admin-tab.active {
+            background-color: var(--accent);
+        }
+
+        .admin-form {
+            display: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .admin-form.active {
+            display: grid;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 0.75rem;
+            border: 2px solid var(--background);
+            background-color: var(--foreground);
+            color: var(--background);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .admin-button {
+            grid-column: 1 / -1;
+            padding: 1rem;
+            background-color: var(--accent);
+            color: white;
+            border: 2px solid var(--background);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+
+        .admin-button:hover {
+            background-color: var(--primary);
+        }
+
+        .close-admin {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: var(--primary);
+            color: white;
+            border: 2px solid var(--background);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Bebas Neue', sans-serif;
+        }
+
+        .settings-btn {
+            display: none;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            padding: 0.5rem 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .categories {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-btn {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">RETRO<span>FUTURE</span></div>
+        <nav id="nav">
+            <a href="#modern">MODERN</a>
+            <a href="#classic">CLASSIC</a>
+            <a href="#accessories">ACCESSORIES</a>
+            <a href="#deals">DEALS</a>
+        </nav>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="currency-selector" onclick="toggleCurrency()">
+                <span id="currencyDisplay">$ USD</span>
+                <div class="currency-dropdown" id="currencyDropdown">
+                    <div class="currency-option" onclick="setCurrency('USD', '$')">$ USD — US Dollar</div>
+                    <div class="currency-option" onclick="setCurrency('EUR', '€')">€ EUR — Euro</div>
+                    <div class="currency-option" onclick="setCurrency('GBP', '£')">£ GBP — British Pound</div>
+                    <div class="currency-option" onclick="setCurrency('JPY', '¥')">¥ JPY — Japanese Yen</div>
+                    <div class="currency-option" onclick="setCurrency('AUD', 'A$')">A$ AUD — Australian Dollar</div>
+                    <div class="currency-option" onclick="setCurrency('CAD', 'C$')">C$ CAD — Canadian Dollar</div>
+                    <div class="currency-option" onclick="setCurrency('CHF', 'CHF')">CHF CHF — Swiss Franc</div>
+                    <div class="currency-option" onclick="setCurrency('CNY', '¥')">¥ CNY — Chinese Yuan</div>
+                    <div class="currency-option" onclick="setCurrency('INR', '₹')">₹ INR — Indian Rupee</div>
+                    <div class="currency-option" onclick="setCurrency('ZAR', 'R')">R ZAR — South African Rand</div>
+                    <div class="currency-option" onclick="setCurrency('MXN', '$')">$ MXN — Mexican Peso</div>
+                    <div class="currency-option" onclick="setCurrency('BRL', 'R$')">R$ BRL — Brazilian Real</div>
+                    <div class="currency-option" onclick="setCurrency('SGD', 'S$')">S$ SGD — Singapore Dollar</div>
+                    <div class="currency-option" onclick="setCurrency('HKD', 'HK$')">HK$ HKD — Hong Kong Dollar</div>
+                    <div class="currency-option" onclick="setCurrency('NZD', 'NZ$')">NZ$ NZD — New Zealand Dollar</div>
+                    <div class="currency-option" onclick="setCurrency('SEK', 'kr')">kr SEK — Swedish Krona</div>
+                    <div class="currency-option" onclick="setCurrency('NOK', 'kr')">kr NOK — Norwegian Krone</div>
+                    <div class="currency-option" onclick="setCurrency('KRW', '₩')">₩ KRW — South Korean Won</div>
+                    <div class="currency-option" onclick="setCurrency('THB', '฿')">฿ THB — Thai Baht</div>
+                    <div class="currency-option" onclick="setCurrency('AED', 'د.إ')">د.إ AED — UAE Dirham</div>
+                    <div class="currency-option" onclick="setCurrency('SAR', 'ر.س')">ر.س SAR — Saudi Riyal</div>
+                </div>
+            </div>
+            <button class="settings-btn" onclick="toggleAdmin()" title="Admin Settings">⚙️</button>
+        </div>
+    </header>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <button class="close-admin" onclick="toggleAdmin()">✕ CLOSE</button>
+        <h2>ADMIN MODE</h2>
+        <div class="admin-tabs">
+            <button class="admin-tab active" onclick="switchAdminTab('product')">ADD PRODUCT</button>
+            <button class="admin-tab" onclick="switchAdminTab('review')">ADD REVIEW</button>
+        </div>
+
+        <!-- Product Form -->
+        <div class="admin-form active" id="productForm">
+            <div class="form-group">
+                <label>Product Name *</label>
+                <input type="text" id="productName" placeholder="e.g., Mechanical Keyboard">
+            </div>
+            <div class="form-group">
+                <label>Price *</label>
+                <input type="text" id="productPrice" placeholder="e.g., $99.99">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="productDescription" placeholder="Describe the product..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Image URL</label>
+                <input type="text" id="productImage" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select id="productCategory">
+                    <option value="modern">Modern</option>
+                    <option value="classic">Classic</option>
+                    <option value="accessories">Accessories</option>
+                    <option value="deals">Deals</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Badge (optional)</label>
+                <input type="text" id="productBadge" placeholder="e.g., NEW, HOT, DEAL">
+            </div>
+            <div class="form-group">
+                <label>Button Label</label>
+                <input type="text" id="productButtonLabel" placeholder="e.g., Buy Now" value="Buy Now">
+            </div>
+            <div class="form-group">
+                <label>Button Link</label>
+                <input type="text" id="productButtonLink" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label>Shopping Cart Link</label>
+                <input type="text" id="productCartLink" placeholder="https://your-cart-link.com">
+            </div>
+            <button class="admin-button" onclick="addProduct()">+ ADD PRODUCT</button>
+        </div>
+
+        <!-- Review Form -->
+        <div class="admin-form" id="reviewForm">
+            <div class="form-group">
+                <label>Author Name *</label>
+                <input type="text" id="reviewAuthor" placeholder="e.g., John Doe">
+            </div>
+            <div class="form-group">
+                <label>Rating (1-5)</label>
+                <select id="reviewRating">
+                    <option value="5">5 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="2">2 Stars</option>
+                    <option value="1">1 Star</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Review Text *</label>
+                <textarea id="reviewText" placeholder="What did you think?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="text" id="reviewDate" placeholder="e.g., March 2026">
+            </div>
+            <button class="admin-button" onclick="addReview()">+ ADD REVIEW</button>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-label">01 / WELCOME</div>
+            <h1 id="heroHeadline">WHERE THE PAST MEETS THE FUTURE</h1>
+            <p id="heroSubheadline">Modern tech. Classic 90s gear. One store. RetroFuture is your destination for the best of both worlds — cutting-edge gadgets and legendary vintage technology.</p>
+            <div class="hero-buttons">
+                <a href="#modern" class="btn" id="heroBtn1">SHOP MODERN</a>
+                <a href="#classic" class="btn btn-outline" id="heroBtn2">BROWSE CLASSICS</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section>
+        <div class="container">
+            <div class="section-label">02 / ABOUT</div>
+            <h2 id="aboutTitle">WE LIVE IN TWO ERAS AT ONCE</h2>
+            <p class="about-text" id="aboutText">RetroFuture was born from a simple obsession: great technology never truly dies. We curate the finest modern gadgets alongside authentic 90s classics — because some things were built to last, and some things are just built better now. Whether you're hunting for a pristine Game Boy, a mechanical keyboard, or the latest wireless earbuds, you'll find it here.</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Products</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">4.9★</div>
+                    <div class="stat-label">Avg Rating</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section>
+        <div class="container">
+            <div class="section-label">03 / CATEGORIES</div>
+            <h2>SHOP BY CATEGORY</h2>
+            <div class="categories" id="categoriesGrid">
+                <!-- Categories will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section>
+        <div class="container">
+            <div class="section-label">04 / PRODUCTS</div>
+            <h2>OUR INVENTORY</h2>
+            <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                <button onclick="filterProducts('all')" class="btn" style="background-color: var(--accent); color: white;">ALL</button>
+                <button onclick="filterProducts('modern')" class="btn" style="background-color: transparent; color: var(--foreground); border: 2px solid var(--foreground);">MODERN</button>
+                <button onclick="filterProducts('classic')" class="btn" style="background-color: transparent; color: var(--foreground); border: 2px solid var(--foreground);">CLASSIC</button>
+                <button onclick="filterProducts('accessories')" class="btn" style="background-color: transparent; color: var(--foreground); border: 2px solid var(--foreground);">ACCESSORIES</button>
+                <button onclick="filterProducts('deals')" class="btn" style="background-color: transparent; color: var(--foreground); border: 2px solid var(--foreground);">DEALS</button>
+            </div>
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section>
+        <div class="container">
+            <div class="section-label">05 / REVIEWS</div>
+            <h2>WHAT PEOPLE SAY</h2>
+            <div class="reviews" id="reviewsGrid">
+                <!-- Reviews will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Shop</h4>
+                <a href="#modern">Modern</a>
+                <a href="#classic">Classic</a>
+                <a href="#accessories">Accessories</a>
+                <a href="#deals">Deals</a>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <a href="#">About Us</a>
+                <a href="#">Shipping</a>
+                <a href="#">Returns</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Cookies</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 RetroFuture. All rights reserved. Where the past meets the future.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Currency Conversion Rates
+        const exchangeRates = {
+            'USD': 1,
+            'EUR': 0.92,
+            'GBP': 0.79,
+            'JPY': 149.50,
+            'AUD': 1.53,
+            'CAD': 1.36,
+            'CHF': 0.88,
+            'CNY': 7.24,
+            'INR': 83.12,
+            'ZAR': 18.65,
+            'MXN': 17.05,
+            'BRL': 4.97,
+            'SGD': 1.34,
+            'HKD': 7.81,
+            'NZD': 1.67,
+            'SEK': 10.50,
+            'NOK': 10.65,
+            'KRW': 1319.50,
+            'THB': 35.50,
+            'AED': 3.67,
+            'SAR': 3.75
+        };
+
+        let currentCurrency = 'USD';
+        let currentCurrencySymbol = '$';
+        let currentFilter = 'all';
+        let products = [
+            {
+                id: 1,
+                name: 'Original Game Boy DMG-01',
+                description: 'The one that started it all. Fully refurbished with new screen and battery. Ships with Tetris.',
+                price: 89.99,
+                category: 'classic',
+                image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663507032916/e4uQ5PYxUYWZx6VZW8YFDk/classic-tech-PbsiHVqrM7XVVuYs55yV4i.webp',
+                badge: '90s CLASSIC',
+                buttonLabel: 'Add to Cart',
+                buttonLink: '#',
+                cartLink: '#'
+            },
+            {
+                id: 2,
+                name: 'Mechanical Keyboard TKL',
+                description: 'Tenkeyless layout, Cherry MX switches, PBT keycaps. Built to outlast every trend.',
+                price: 129.99,
+                category: 'modern',
+                image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663507032916/e4uQ5PYxUYWZx6VZW8YFDk/modern-tech-RHNXnrsun7fLyKiqwohRdy.webp',
+                badge: 'NEW',
+                buttonLabel: 'Shop Now',
+                buttonLink: '#',
+                cartLink: '#'
+            },
+            {
+                id: 3,
+                name: 'Desk Setup Bundle',
+                description: 'Keyboard, mouse pad, USB hub, and monitor stand. Everything you need to build the perfect workstation.',
+                price: 199.99,
+                category: 'accessories',
+                image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663507032916/e4uQ5PYxUYWZx6VZW8YFDk/accessories-TdkSzMX9mgEv25aBwgUzmz.webp',
+                badge: 'BUNDLE',
+                buttonLabel: 'Get the Bundle',
+                buttonLink: '#',
+                cartLink: '#'
+            },
+            {
+                id: 4,
+                name: 'Sony Walkman WM-D6C',
+                description: 'Professional-grade cassette Walkman. Fully serviced, belts replaced. The gold standard of portable audio.',
+                price: 149.99,
+                category: 'classic',
+                image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663507032916/e4uQ5PYxUYWZx6VZW8YFDk/classic-tech-PbsiHVqrM7XVVuYs55yV4i.webp',
+                badge: '90s CLASSIC',
+                buttonLabel: 'Buy Now',
+                buttonLink: '#',
+                cartLink: '#'
+            },
+            {
+                id: 5,
+                name: 'Wireless Earbuds Pro',
+                description: 'Active noise cancellation, 30hr battery, IPX5 water resistance. The modern way to listen.',
+                price: 79.99,
+                category: 'modern',
+                image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663507032916/e4uQ5PYxUYWZx6VZW8YFDk/modern-tech-RHNXnrsun7fLyKiqwohRdy.webp',
+                badge: 'HOT',
+                buttonLabel: 'Shop Now',
+                buttonLink: '#',
+                cartLink: '#'
+            },
+            {
+                id: 6,
+                name: 'Retro Bundle Deal',
+                description: 'Game Boy + Walkman + 5 cassettes + 3 game cartridges. The ultimate 90s nostalgia pack.',
+                price: 199.99,
+                category: 'deals',
+                image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663507032916/e4uQ5PYxUYWZx6VZW8YFDk/classic-tech-PbsiHVqrM7XVVuYs55yV4i.webp',
+                badge: 'DEAL',
+                buttonLabel: 'Grab the Deal',
+                buttonLink: '#',
+                cartLink: '#'
+            }
+        ];
+
+        let reviews = [
+            {
+                id: 1,
+                author: 'Marcus T.',
+                rating: 5,
+                text: 'Got the Game Boy and it\'s in perfect condition. Looks like it just came out of the box. RetroFuture knows their stuff.',
+                date: 'March 2026'
+            },
+            {
+                id: 2,
+                author: 'Sarah K.',
+                rating: 5,
+                text: 'Ordered the desk bundle and it arrived in two days. The keyboard feels incredible. This is my go-to store now.',
+                date: 'February 2026'
+            },
+            {
+                id: 3,
+                author: 'Dev R.',
+                rating: 5,
+                text: 'The Walkman sounds unbelievably good. They clearly serviced it properly. Worth every penny.',
+                date: 'January 2026'
+            }
+        ];
+
+        // Currency Functions
+        function toggleCurrency() {
+            document.getElementById('currencyDropdown').classList.toggle('active');
+        }
+
+        function setCurrency(code, symbol) {
+            currentCurrency = code;
+            currentCurrencySymbol = symbol;
+            document.getElementById('currencyDisplay').textContent = symbol + ' ' + code;
+            document.getElementById('currencyDropdown').classList.remove('active');
+            localStorage.setItem('selectedCurrency', code);
+            localStorage.setItem('currencySymbol', symbol);
+            renderProducts();
+        }
+
+        function convertPrice(price) {
+            const rate = exchangeRates[currentCurrency] || 1;
+            const converted = price * rate;
+            return currentCurrencySymbol + converted.toFixed(2);
+        }
+
+        // Admin Functions
+        function toggleAdmin() {
+            document.getElementById('adminPanel').classList.toggle('active');
+        }
+
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-form').forEach(f => f.classList.remove('active'));
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tab + 'Form').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function addProduct() {
+            const name = document.getElementById('productName').value;
+            const price = parseFloat(document.getElementById('productPrice').value.replace(/[^0-9.-]/g, ''));
+            const description = document.getElementById('productDescription').value;
+            const image = document.getElementById('productImage').value;
+            const category = document.getElementById('productCategory').value;
+            const badge = document.getElementById('productBadge').value;
+            const buttonLabel = document.getElementById('productButtonLabel').value;
+            const buttonLink = document.getElementById('productButtonLink').value;
+            const cartLink = document.getElementById('productCartLink').value;
+
+            if (!name || !price) {
+                alert('Name and price are required!');
+                return;
+            }
+
+            const newProduct = {
+                id: Math.max(...products.map(p => p.id), 0) + 1,
+                name,
+                price,
+                description,
+                image: image || 'https://via.placeholder.com/300x250?text=No+Image',
+                category,
+                badge,
+                buttonLabel,
+                buttonLink,
+                cartLink
+            };
+
+            products.push(newProduct);
+            document.getElementById('productName').value = '';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productDescription').value = '';
+            document.getElementById('productImage').value = '';
+            document.getElementById('productBadge').value = '';
+            document.getElementById('productButtonLabel').value = 'Buy Now';
+            document.getElementById('productButtonLink').value = '';
+            document.getElementById('productCartLink').value = '';
+            alert('Product added!');
+            renderProducts();
+            localStorage.setItem('products', JSON.stringify(products));
+        }
+
+        function addReview() {
+            const author = document.getElementById('reviewAuthor').value;
+            const rating = parseInt(document.getElementById('reviewRating').value);
+            const text = document.getElementById('reviewText').value;
+            const date = document.getElementById('reviewDate').value || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            if (!author || !text) {
+                alert('Author and review text are required!');
+                return;
+            }
+
+            const newReview = {
+                id: Math.max(...reviews.map(r => r.id), 0) + 1,
+                author,
+                rating,
+                text,
+                date
+            };
+
+            reviews.push(newReview);
+            document.getElementById('reviewAuthor').value = '';
+            document.getElementById('reviewText').value = '';
+            document.getElementById('reviewDate').value = '';
+            alert('Review added!');
+            renderReviews();
+            localStorage.setItem('reviews', JSON.stringify(reviews));
+        }
+
+        function filterProducts(category) {
+            currentFilter = category;
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const filtered = currentFilter === 'all' ? products : products.filter(p => p.category === currentFilter);
+            const html = filtered.map(product => `
+                <div class="product-card">
+                    ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
+                    <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/300x250?text=No+Image'">
+                    <div class="product-content">
+                        <div class="product-name">${product.name}</div>
+                        <p class="product-description">${product.description}</p>
+                        <div class="product-footer">
+                            <div class="product-price">${convertPrice(product.price)}</div>
+                            <a href="${product.buttonLink}" class="product-btn">${product.buttonLabel}</a>
+                        </div>
+                        <a href="${product.cartLink}" class="cart-btn">🛒 ADD TO CART</a>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('productsGrid').innerHTML = html;
+        }
+
+        function renderReviews() {
+            const html = reviews.map(review => `
+                <div class="review-card">
+                    <div class="review-quote">"</div>
+                    <p class="review-text">${review.text}</p>
+                    <div class="review-rating">${'★'.repeat(review.rating)}</div>
+                    <div class="review-author">${review.author}</div>
+                    <div class="review-date">${review.date}</div>
+                </div>
+            `).join('');
+            document.getElementById('reviewsGrid').innerHTML = html;
+        }
+
+        function renderCategories() {
+            const categories = [
+                { id: 'modern', title: 'MODERN TECH', description: 'The best of what\'s available today. Curated for performance, design, and longevity.', image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663507032916/e4uQ5PYxUYWZx6VZW8YFDk/modern-tech-RHNXnrsun7fLyKiqwohRdy.webp' },
+                { id: 'classic', title: 'CLASSIC 90s', description: 'Authentic vintage technology. Every piece tested, serviced, and ready to use.', image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663507032916/e4uQ5PYxUYWZx6VZW8YFDk/classic-tech-PbsiHVqrM7XVVuYs55yV4i.webp' },
+                { id: 'accessories', title: 'ACCESSORIES', description: 'Everything you need to complete your setup. Cables, stands, cases, and more.', image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663507032916/e4uQ5PYxUYWZx6VZW8YFDk/accessories-TdkSzMX9mgEv25aBwgUzmz.webp' },
+                { id: 'deals', title: 'DEALS', description: 'Limited-time offers and bundles. The best prices on the best gear.', image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663507032916/e4uQ5PYxUYWZx6VZW8YFDk/classic-tech-PbsiHVqrM7XVVuYs55yV4i.webp' }
+            ];
+
+            const html = categories.map(cat => `
+                <a href="#${cat.id}" class="category-card">
+                    <img src="${cat.image}" alt="${cat.title}" class="category-image" onerror="this.src='https://via.placeholder.com/300x200?text=${cat.title}'">
+                    <div class="category-content">
+                        <h3>${cat.title}</h3>
+                        <p>${cat.description}</p>
+                    </div>
+                </a>
+            `).join('');
+            document.getElementById('categoriesGrid').innerHTML = html;
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            const savedCurrency = localStorage.getItem('selectedCurrency');
+            const savedSymbol = localStorage.getItem('currencySymbol');
+            if (savedCurrency) {
+                currentCurrency = savedCurrency;
+                currentCurrencySymbol = savedSymbol;
+                document.getElementById('currencyDisplay').textContent = savedSymbol + ' ' + savedCurrency;
+            }
+
+            const savedProducts = localStorage.getItem('products');
+            if (savedProducts) {
+                products = JSON.parse(savedProducts);
+            }
+
+            const savedReviews = localStorage.getItem('reviews');
+            if (savedReviews) {
+                reviews = JSON.parse(savedReviews);
+            }
+
+            renderProducts();
+            renderReviews();
+            renderCategories();
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.currency-selector')) {
+                document.getElementById('currencyDropdown').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
